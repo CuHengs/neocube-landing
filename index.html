@@ -9,12 +9,12 @@
 <!-- 공유 미리보기. og:url과 og:image는 배포 도메인이 정해지면 절대 URL로 바꿀 것. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="네오큐브 (NEOCUBE)">
-<meta property="og:title" content="사람에게 붙어 있는 업무를 기준과 도구로 옮깁니다">
+<meta property="og:title" content="담당자가 바뀌어도 멈추지 않는 업무 구조를 만듭니다">
 <meta property="og:description" content="IT 서비스업 중소기업의 내부 업무를 진단하고, 다시 설계하고, 실행까지 대행합니다. 사전 미팅 60분 무상.">
 <meta property="og:image" content="uploads/office_qwen3.webp">
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="사람에게 붙어 있는 업무를 기준과 도구로 옮깁니다">
+<meta name="twitter:title" content="담당자가 바뀌어도 멈추지 않는 업무 구조를 만듭니다">
 <meta name="twitter:description" content="IT 서비스업 중소기업의 업무 진단 · 프로세스 재설계 · 실행 대행. 사전 미팅 60분 무상.">
 <meta name="twitter:image" content="uploads/office_qwen3.webp">
 <link rel="icon" href="uploads/logo.svg">
@@ -38,7 +38,8 @@
   /* height:auto가 없으면 HTML의 height 속성이 그대로 적용돼 aspect-ratio가 무시된다.
      (banner처럼 CSS에서 height를 직접 정한 곳은 클래스 규칙이 이긴다) */
   img { max-width: 100%; height: auto; }
-  h1, h2, h3, p { text-wrap: pretty; }
+  /* 한국어는 어절 단위로 끊는다. keep-all만 쓰면 긴 단어가 넘칠 수 있어 break-word를 함께 둔다 */
+  h1, h2, h3, p { text-wrap: pretty; word-break: keep-all; overflow-wrap: break-word; }
 
   /* ---------- 레이아웃 ---------- */
   .wrap { max-width: var(--hi-container); margin: 0 auto; }
@@ -150,8 +151,10 @@
   .hero { background: var(--hi-navy-900); color: #fff; padding: var(--hi-s28) var(--hi-gutter) 96px; }
   .hero h1 {
     margin: 20px 0 0; font-size: var(--hi-display-1); line-height: var(--hi-lh-heading);
-    font-weight: 700; max-width: 20ch; color: #fff;
+    font-weight: 700; max-width: 24ch; color: #fff;
   }
+  /* 좁은 화면에서는 <br>이 오히려 줄을 더 쪼갠다. 자연 줄바꿈에 맡긴다 */
+  @media (max-width: 520px) { .hero h1 br { display: none; } }
   .hero h1 em { font-style: normal; color: #7FA4FF; }
   .hero__lead {
     margin: 28px 0 0; font-size: var(--hi-body-1); line-height: 1.75;
@@ -329,8 +332,8 @@
     <div class="grid-2">
       <div>
         <div class="eyebrow eyebrow--light">Diagnose · Redesign · Operate</div>
-        <h1>사람에게 붙어 있는 업무를 <em>기준과 도구</em>로 옮깁니다</h1>
-        <p class="hero__lead">네오큐브는 IT 서비스업 중소기업의 내부 업무를 진단하고, 다시 설계하고, 실행까지 대행하는 컨설팅·실행 대행 회사입니다.</p>
+        <h1>사람에게 붙어 있던 업무,<br> 담당자가 바뀌어도 <em>멈추지 않습니다</em></h1>
+        <p class="hero__lead">네오큐브는 IT 서비스업 중소기업의 내부 업무를 진단하고, 다시 설계하고, 실행 인력이 부족한 구간은 직접 대행합니다.</p>
         <div class="hero__cta">
           <button type="button" class="btn btn--lg btn--on-dark" data-open-lead>사전 미팅 신청 (무상 60분) <span class="btn__arrow">→</span></button>
           <a class="btn btn--lg btn--ghost-on-dark" href="#service">서비스 살펴보기</a>
