@@ -7,27 +7,27 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* Brand */
-  --hi-navy-900: #08182F;   /* hero / footer ground */
-  --hi-navy-800: #0F2A4E;
-  --hi-navy-700: #163A68;
-  --hi-blue-600: #1B4DE4;   /* primary action */
-  --hi-blue-500: #3C68EA;   /* hover */
-  --hi-blue-700: #143CB4;   /* press */
-  --hi-blue-100: #D9E2FD;
-  --hi-blue-50:  #EEF3FE;
+  /* Brand — helloinsa.co.kr 실측값 (getComputedStyle 집계) */
+  --hi-navy-900: #222222;   /* 다크 섹션 ground. 사이트는 맨 아래 CTA에만 쓴다 */
+  --hi-navy-800: #2E2E2E;
+  --hi-navy-700: #3A3A3A;
+  --hi-blue-600: #126DFF;   /* primary action */
+  --hi-blue-500: #3B87FF;   /* hover */
+  --hi-blue-700: #0B57D0;   /* press */
+  --hi-blue-100: #D6E6FF;
+  --hi-blue-50:  #EDF4FF;   /* rgba(18,109,255,.08) on white */
   --hi-gold-500: #C08A2E;   /* heritage accent, text-safe on white */
   --hi-gold-50:  #FBF3E4;
 
   /* Neutrals */
-  --hi-ink:        #14181F;
-  --hi-ink-2:      #414852;
-  --hi-ink-3:      #6B7280;
-  --hi-ink-4:      #9AA1AC;
-  --hi-line:       #E4E7EC;
-  --hi-line-soft:  #EFF1F4;
+  --hi-ink:        #222222;  /* 제목 */
+  --hi-ink-2:      #333333;  /* 본문 */
+  --hi-ink-3:      #555555;  /* 보조 */
+  --hi-ink-4:      #888888;  /* 흐린 텍스트 */
+  --hi-line:       #EEEEEE;
+  --hi-line-soft:  #F5F5F5;
   --hi-surface:    #FFFFFF;
-  --hi-surface-2:  #F7F8FA;
+  --hi-surface-2:  #FAFAFA;
 
   /* Status */
   --hi-success: #1E9E63;
@@ -37,38 +37,41 @@
   /* Type */
   --hi-font: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --hi-font-num: "Inter", var(--hi-font);
-  --hi-display-1: 56px;
-  --hi-display-2: 44px;
-  --hi-heading-1: 34px;
-  --hi-heading-2: 26px;
-  --hi-heading-3: 20px;
-  --hi-body-1: 17px;
+  /* 사이트는 h1 40px/60px, h2 32px/48px — 행간 1.5로 넉넉하다 */
+  --hi-display-1: 40px;
+  --hi-display-2: 32px;
+  --hi-heading-1: 32px;
+  --hi-heading-2: 24px;
+  --hi-heading-3: 18px;
+  --hi-body-1: 16px;
   --hi-body-2: 15px;
   --hi-detail: 13px;
   --hi-eyebrow: 12px;
+  --hi-lh-heading: 1.5;   /* 사이트가 제목에도 1.5를 쓴다 */
+  --hi-lh-body: 1.75;
 
-  /* Spacing — 4px grid, marketing rhythm */
+  /* Spacing — 4px grid, marketing rhythm. 섹션 세로 여백은 사이트와 같은 120px */
   --hi-s1: 4px;  --hi-s2: 8px;  --hi-s3: 12px; --hi-s4: 16px;
   --hi-s5: 20px; --hi-s6: 24px; --hi-s8: 32px; --hi-s10: 40px;
-  --hi-s14: 56px; --hi-s18: 72px; --hi-s28: 112px;
+  --hi-s14: 56px; --hi-s18: 72px; --hi-s28: 120px;
 
-  /* Radius — softer than admin UI */
-  --hi-r-sm: 6px;
-  --hi-r-md: 10px;
-  --hi-r-lg: 16px;
-  --hi-r-xl: 24px;
-  --hi-r-full: 9999px;
+  /* Radius — 사이트 실측: 버튼·카드 8px, 큰 블록 12px, 칩 100px */
+  --hi-r-sm: 4px;
+  --hi-r-md: 8px;
+  --hi-r-lg: 12px;
+  --hi-r-xl: 20px;
+  --hi-r-full: 100px;
 
-  /* Elevation — blue-tinted, restrained */
-  --hi-shadow-sm: 0 1px 2px rgba(8, 24, 47, 0.06);
-  --hi-shadow-md: 0 6px 20px rgba(8, 24, 47, 0.08);
-  --hi-shadow-lg: 0 18px 48px rgba(8, 24, 47, 0.12);
+  /* Elevation — 사이트의 파랑 섞인 그림자 */
+  --hi-shadow-sm: 0 1px 6px rgba(0, 0, 0, 0.06);
+  --hi-shadow-md: 0 4px 24px rgba(18, 109, 255, 0.12), 0 1px 6px rgba(0, 0, 0, 0.06);
+  --hi-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.25);
 
   /* Motion */
   --hi-fast: 140ms;
   --hi-ease: cubic-bezier(.4, 0, .2, 1);
 
   /* Layout */
-  --hi-container: 1160px;
+  --hi-container: 1200px;
   --hi-gutter: 40px;
 }
