@@ -12,6 +12,15 @@
     '안녕하세요, 네오큐브 상담 챗봇 ' + BOT_NAME + '입니다. ' +
     '서비스 구성, 비용, 진행 절차를 안내해 드립니다. 무엇이 궁금하신가요?';
 
+  // 자주 묻는 질문. FAQ 표의 우선순위 1~2 항목에서 뽑았다.
+  // label은 버튼에 보이는 짧은 말, question은 실제로 보내는 문장.
+  var QUICK_ASKS = [
+    { label: '비용이 궁금해요', question: '서비스별 비용과 기간을 알려주세요' },
+    { label: '진행 절차', question: '문의부터 계약까지 어떻게 진행되나요?' },
+    { label: '어떤 서비스가 있나요', question: '제공하는 서비스 구성을 알려주세요' },
+    { label: '상담 신청', question: '상담을 신청하고 싶어요' }
+  ];
+
   /* ---------- 상태 ---------- */
   var messages = [];      // {role, content} — 서버로 보내는 이력
   var sessionId = getSessionId();
@@ -90,6 +99,13 @@
     '.nc-msg--user{align-self:flex-end;background:var(--hi-blue-600,#1B4DE4);color:#fff;border-radius:14px 14px 4px 14px;}',
     '.nc-msg--error{align-self:flex-start;background:#FDECEA;border:1px solid #F5C6C0;color:var(--hi-danger,#D83A2B);',
     'border-radius:14px;font-size:13px;}',
+
+    '.nc-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}',
+    '.nc-quick button{padding:7px 12px;font:600 12.5px/1.2 inherit;cursor:pointer;',
+    'color:var(--hi-blue-600,#126DFF);background:var(--hi-surface,#fff);',
+    'border:1px solid var(--hi-blue-100,#D6E6FF);border-radius:var(--hi-r-full,100px);}',
+    '.nc-quick button:hover{background:var(--hi-blue-50,#EDF4FF);border-color:var(--hi-blue-600,#126DFF);}',
+    '.nc-quick button:disabled{opacity:.5;cursor:not-allowed;}',
 
     '.nc-typing{align-self:flex-start;display:flex;gap:4px;padding:14px;background:var(--hi-surface,#fff);',
     'border:1px solid var(--hi-line,#E4E7EC);border-radius:14px 14px 14px 4px;}',
@@ -361,6 +377,25 @@
     welcomed = true;
     addBubble('bot', WELCOME);
     remember('assistant', WELCOME);
+    showQuickAsks();
+  }
+
+  function showQuickAsks() {
+    if (log.querySelector('.nc-quick')) return;
+    var wrap = el('div', 'nc-quick');
+    QUICK_ASKS.forEach(function (q) {
+      var b = el('button', null);
+      b.type = 'button';
+      b.textContent = q.label;
+      b.addEventListener('click', function () {
+        if (isSending) return;
+        wrap.remove();   // 한 번 고르면 치운다. 대화가 시작되면 자리만 차지한다
+        send(q.question);
+      });
+      wrap.appendChild(b);
+    });
+    log.appendChild(wrap);
+    scrollDown();
   }
 
   /* ---------- 전송 ---------- */
