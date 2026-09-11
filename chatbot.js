@@ -67,7 +67,24 @@
 
     '.nc-chat-log{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;',
     'background:var(--hi-surface-2,#F7F8FA);}',
-    '.nc-msg{max-width:84%;padding:11px 14px;font-size:14px;line-height:1.7;font-weight:500;white-space:pre-wrap;word-break:break-word;}',
+    '.nc-msg{max-width:84%;padding:11px 14px;font-size:14px;line-height:1.7;font-weight:500;word-break:keep-all;overflow-wrap:break-word;}',
+    '.nc-msg--user,.nc-msg--error{white-space:pre-wrap;}',
+    '.nc-msg--bot p{margin:0;}',
+    '.nc-msg--bot p+p,.nc-msg--bot p+ul,.nc-msg--bot ul+p,.nc-msg--bot .nc-table+p,.nc-msg--bot p+.nc-table{margin-top:8px;}',
+    '.nc-msg--bot ul{margin:0;padding-left:18px;}',
+    '.nc-msg--bot li{margin:2px 0;}',
+    '.nc-msg--bot strong{font-weight:700;}',
+    '.nc-msg--bot code{padding:1px 5px;border-radius:4px;background:var(--hi-surface-2,#FAFAFA);',
+    'font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;}',
+    /* 표가 들어가면 말풍선을 넘게 펼친다 */
+    '.nc-msg--wide{max-width:100%;align-self:stretch;}',
+    /* 표는 말풍선 패딩 바깥까지 써서 폭을 번다. 그래도 좁으면 가로 스크롤 */
+    '.nc-table{overflow-x:auto;margin:8px -14px 0;padding:0 14px;-webkit-overflow-scrolling:touch;}',
+    '.nc-msg--bot table{border-collapse:collapse;font-size:12.5px;line-height:1.5;min-width:100%;}',
+    '.nc-msg--bot th,.nc-msg--bot td{border:1px solid var(--hi-line,#EEE);padding:6px 8px;text-align:left;',
+    'white-space:nowrap;}',
+    '.nc-msg--bot th{background:var(--hi-surface-2,#FAFAFA);font-weight:700;}',
+    '.nc-msg--bot td:not(:first-child),.nc-msg--bot th:not(:first-child){text-align:right;}',
     '.nc-msg--bot{align-self:flex-start;background:var(--hi-surface,#fff);border:1px solid var(--hi-line,#E4E7EC);',
     'border-radius:14px 14px 14px 4px;}',
     '.nc-msg--user{align-self:flex-end;background:var(--hi-blue-600,#1B4DE4);color:#fff;border-radius:14px 14px 4px 14px;}',
@@ -214,12 +231,97 @@
     log.scrollTop = log.scrollHeight;
   }
 
+  /* ---------- 마크다운 (허용 부분집합) ----------
+     모델 출력을 innerHTML에 그대로 넣으면 HTML이 실행된다.
+     먼저 전부 이스케이프한 뒤, 우리가 만드는 태그만 다시 넣는다. */
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function inline(s) {
+    return s
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>');
+  }
+
+  var RE_ROW = /^\s*\|.*\|\s*$/;
+  var RE_SEP = /^\s*\|[\s:|-]+\|\s*$/;
+
+  function splitRow(line) {
+    return line.trim().replace(/^\||\|$/g, '').split('|').map(function (c) {
+      return inline(c.trim());
+    });
+  }
+
+  function mdToHtml(src) {
+    var lines = esc(src).split('\n');
+    var out = [];
+    var i = 0;
+
+    while (i < lines.length) {
+      var line = lines[i];
+
+      // 표: 헤더 행 바로 뒤에 구분 행이 올 때만 인정한다
+      if (RE_ROW.test(line) && i + 1 < lines.length && RE_SEP.test(lines[i + 1])) {
+        var head = splitRow(line);
+        i += 2;
+        var body = [];
+        while (i < lines.length && RE_ROW.test(lines[i])) {
+          body.push(splitRow(lines[i]));
+          i++;
+        }
+        var html = '<div class="nc-table"><table><thead><tr>';
+        head.forEach(function (c) { html += '<th>' + c + '</th>'; });
+        html += '</tr></thead><tbody>';
+        body.forEach(function (row) {
+          html += '<tr>';
+          // 칸 수가 헤더와 달라도 깨지지 않게 헤더 길이에 맞춘다
+          for (var c = 0; c < head.length; c++) html += '<td>' + (row[c] || '') + '</td>';
+          html += '</tr>';
+        });
+        out.push(html + '</tbody></table></div>');
+        continue;
+      }
+
+      // 목록
+      if (/^\s*[-*]\s+/.test(line)) {
+        var items = [];
+        while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+          items.push('<li>' + inline(lines[i].replace(/^\s*[-*]\s+/, '')) + '</li>');
+          i++;
+        }
+        out.push('<ul>' + items.join('') + '</ul>');
+        continue;
+      }
+
+      // 문단: 빈 줄이나 다른 블록이 나올 때까지 모아 <br>로 잇는다
+      if (line.trim() === '') { i++; continue; }
+      var para = [];
+      while (i < lines.length && lines[i].trim() !== '' &&
+             !RE_ROW.test(lines[i]) && !/^\s*[-*]\s+/.test(lines[i])) {
+        para.push(inline(lines[i].trim()));
+        i++;
+      }
+      out.push('<p>' + para.join('<br>') + '</p>');
+    }
+
+    return out.join('');
+  }
+
   function addBubble(role, text) {
     var cls = role === 'user' ? 'nc-msg nc-msg--user'
       : role === 'error' ? 'nc-msg nc-msg--error'
       : 'nc-msg nc-msg--bot';
     var node = el('div', cls);
-    node.textContent = text; // 모델 출력은 항상 텍스트로만 넣는다 (HTML 주입 방지)
+
+    if (role === 'bot') {
+      node.innerHTML = mdToHtml(text);
+      // 표가 들어가면 말풍선 폭을 넓힌다
+      if (node.querySelector('table')) node.classList.add('nc-msg--wide');
+    } else {
+      node.textContent = text; // 사용자·오류 문구는 항상 평문
+    }
+
     log.appendChild(node);
     scrollDown();
     return node;
