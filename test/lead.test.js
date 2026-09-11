@@ -54,7 +54,7 @@ assert.equal(typeof limited.body.retryAfter, 'number', 'retryAfter 제공');
 console.log('통과: lead 검증 / rate limit / honeypot');
 
 // --- 텔레그램 알림 ---
-const { notifyLead, NOTIFY_INTERNAL } = await import('../lib/notify.js');
+const { notifyLead, TELEGRAM_INTERNAL } = await import('../lib/telegram.js');
 
 // 환경 변수가 없으면 조용히 건너뛴다 (알림은 선택 기능)
 const savedTg = { t: process.env.TELEGRAM_BOT_TOKEN, c: process.env.TELEGRAM_CHAT_ID };
@@ -67,16 +67,21 @@ if (savedTg.t) process.env.TELEGRAM_BOT_TOKEN = savedTg.t;
 if (savedTg.c) process.env.TELEGRAM_CHAT_ID = savedTg.c;
 
 // 메시지 조립: HTML 이스케이프와 길이 절단
-const msg = NOTIFY_INTERNAL.buildMessage({
+const savedMsgIds = { b: process.env.AIRTABLE_BASE_ID, t: process.env.AIRTABLE_LEADS_TABLE_ID };
+process.env.AIRTABLE_BASE_ID = 'appTEST00000000';
+process.env.AIRTABLE_LEADS_TABLE_ID = 'tblTEST00000000';
+const msg = TELEGRAM_INTERNAL.buildMessage({
   name: '<script>', phone: '010-1234-5678', company: 'A & B',
   source: '챗봇', message: 'x'.repeat(900),
 }, 'recTEST');
 assert.ok(msg.includes('&lt;script&gt;'), '이름의 HTML 이스케이프');
 assert.ok(msg.includes('A &amp; B'), '앰퍼샌드 이스케이프');
 assert.ok(msg.includes('유입경로: 챗봇'), '유입경로 포함');
-assert.ok(msg.includes('recTEST'), 'Airtable 레코드 ID 포함');
+assert.ok(msg.includes('recTEST'), '관리자 링크에 레코드 ID 포함');
 assert.ok(msg.includes('…'), '긴 문의내용 절단');
 assert.ok(msg.length < 1200, '텔레그램 길이 제한 안에 들어옴');
+if (savedMsgIds.b) process.env.AIRTABLE_BASE_ID = savedMsgIds.b; else delete process.env.AIRTABLE_BASE_ID;
+if (savedMsgIds.t) process.env.AIRTABLE_LEADS_TABLE_ID = savedMsgIds.t; else delete process.env.AIRTABLE_LEADS_TABLE_ID;
 
 // 알림 실패가 접수를 막지 않는지: 잘못된 토큰으로도 예외가 새지 않아야 한다
 process.env.TELEGRAM_BOT_TOKEN = '0:invalid';
@@ -87,4 +92,33 @@ assert.ok(!('error' in failed), '예외를 던지지 않음');
 if (savedTg.t) process.env.TELEGRAM_BOT_TOKEN = savedTg.t; else delete process.env.TELEGRAM_BOT_TOKEN;
 if (savedTg.c) process.env.TELEGRAM_CHAT_ID = savedTg.c; else delete process.env.TELEGRAM_CHAT_ID;
 
-console.log('통과: 텔레그램 알림 (미설정 건너뛰기 / 이스케이프 / 절단 / 실패 격리)');
+// 접수 시각은 서버 시간대와 무관하게 KST로 찍힌다
+const fixed = new Date('2026-09-11T00:30:00Z');   // UTC 00:30 → KST 09:30
+const kst = TELEGRAM_INTERNAL.kstNow(fixed);
+assert.equal(kst, '2026-09-11 09:30 KST', 'UTC를 KST로 변환');
+
+// 관리자 링크: 식별자가 있으면 레코드 URL, 없으면 빈 문자열
+const savedIds = { b: process.env.AIRTABLE_BASE_ID, t: process.env.AIRTABLE_LEADS_TABLE_ID };
+process.env.AIRTABLE_BASE_ID = 'appTEST00000000';
+process.env.AIRTABLE_LEADS_TABLE_ID = 'tblTEST00000000';
+assert.equal(TELEGRAM_INTERNAL.adminUrl('recABC'),
+  'https://airtable.com/appTEST00000000/tblTEST00000000/recABC', '레코드 링크');
+delete process.env.AIRTABLE_BASE_ID;
+assert.equal(TELEGRAM_INTERNAL.adminUrl('recABC'), '', '식별자 없으면 링크 생략');
+if (savedIds.b) process.env.AIRTABLE_BASE_ID = savedIds.b;
+if (savedIds.t) process.env.AIRTABLE_LEADS_TABLE_ID = savedIds.t;
+
+// 메시지에 시각과 링크가 실제로 들어가는지
+process.env.AIRTABLE_BASE_ID = 'appTEST00000000';
+process.env.AIRTABLE_LEADS_TABLE_ID = 'tblTEST00000000';
+const full = TELEGRAM_INTERNAL.buildMessage(
+  { name: '홍길동', phone: '010-1234-5678', service: '업무 진단', source: '폼' }, 'recABC', fixed);
+assert.ok(full.includes('접수: 2026-09-11 09:30 KST'), '메시지에 KST 시각');
+assert.ok(full.includes('관리자 페이지에서 열기'), '메시지에 관리자 링크');
+assert.ok(full.includes('관심 서비스: 업무 진단'), '메시지에 관심 서비스');
+if (savedIds.b) process.env.AIRTABLE_BASE_ID = savedIds.b; else delete process.env.AIRTABLE_BASE_ID;
+if (savedIds.t) process.env.AIRTABLE_LEADS_TABLE_ID = savedIds.t; else delete process.env.AIRTABLE_LEADS_TABLE_ID;
+
+assert.equal(TELEGRAM_INTERNAL.TIMEOUT_MS, 5000, '타임아웃 5초');
+
+console.log('통과: 텔레그램 알림 (미설정 건너뛰기 / 이스케이프 / 절단 / 실패 격리 / KST / 관리자 링크 / 타임아웃)');

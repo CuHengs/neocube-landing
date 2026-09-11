@@ -8,8 +8,13 @@
 node_modules/
 .vercel
 
-# OS
+# OS · 편집기
+# 스왑 파일에는 편집 중인 .env 내용이 그대로 들어간다
 .DS_Store
+*.swp
+*.swo
+*~
+.*.sw?
 
 # 디자인 캔버스 산출물 (앱이 생성하는 파일이라 저장소에 두지 않는다)
 *.dc.html

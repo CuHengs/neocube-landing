@@ -16,7 +16,7 @@ api/chat.js           POST /api/chat   챗봇 대화
 lib/lead.js           검증 · honeypot · rate limit · Airtable 기록
 lib/chat.js           시스템 프롬프트 · 모델 호출 · 대화 로그
 lib/knowledge.js      FAQ 조회 · 5분 캐시 · docs/faq.md 폴백
-lib/notify.js         새 상담 신청 텔레그램 알림 (선택)
+lib/telegram.js       새 상담 신청 텔레그램 알림 (선택)
 
 docs/faq.md           Airtable 조회 실패 시 쓰는 폴백 지식
 helloinsa-ds/         디자인 토큰 (CSS 변수)
