@@ -19,4 +19,5 @@ _ds/
 # 원본 소재 (이미지·로고만 uploads/에서 예외로 추적)
 uploads/*
 !uploads/*.png
+!uploads/*.webp
 !uploads/*.svg
