@@ -1,0 +1,11 @@
+{
+  "name": "neocube-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "node server.js",
+    "test": "node test/lead.test.js"
+  }
+}

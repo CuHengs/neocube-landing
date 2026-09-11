@@ -1,0 +1,22 @@
+# 비밀값
+.env
+.env.local
+.env.*.local
+
+# 의존성 · 빌드
+node_modules/
+.vercel
+
+# OS
+.DS_Store
+
+# 디자인 캔버스 산출물 (앱이 생성하는 파일이라 저장소에 두지 않는다)
+*.dc.html
+NEOCUBE Landing.html
+support.js
+_ds/
+
+# 원본 소재 (이미지·로고만 uploads/에서 예외로 추적)
+uploads/*
+!uploads/*.png
+!uploads/*.svg

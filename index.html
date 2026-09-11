@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>네오큐브 (NEOCUBE) — 중소기업 업무 진단·재설계·실행 대행</title>
+<meta name="description" content="네오큐브는 IT 서비스업 중소기업의 내부 업무를 진단하고, 다시 설계하고, 실행까지 대행하는 컨설팅·실행 대행 회사입니다.">
+<link rel="icon" href="uploads/logo.svg">
+<link rel="stylesheet" href="helloinsa-ds/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--hi-surface); color: var(--hi-ink);
+    font-family: var(--hi-font); -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--hi-blue-600); text-decoration: none; }
+  a:hover { color: var(--hi-blue-500); }
+  /* height:auto가 없으면 HTML의 height 속성이 그대로 적용돼 aspect-ratio가 무시된다.
+     (banner처럼 CSS에서 height를 직접 정한 곳은 클래스 규칙이 이긴다) */
+  img { max-width: 100%; height: auto; }
+  h1, h2, h3, p { text-wrap: pretty; }
+
+  /* ---------- 레이아웃 ---------- */
+  .wrap { max-width: var(--hi-container); margin: 0 auto; }
+  .section { padding: var(--hi-s28) var(--hi-gutter); }
+  .section--alt {
+    background: var(--hi-surface-2);
+    border-top: 1px solid var(--hi-line-soft);
+    border-bottom: 1px solid var(--hi-line-soft);
+  }
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 56px; align-items: center; }
+  .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .grid-cards--wide { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+  /* ---------- 디자인 시스템 컴포넌트 ---------- */
+  .eyebrow {
+    font: 600 var(--hi-eyebrow)/1.25 var(--hi-font);
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--hi-blue-600);
+  }
+  .eyebrow--light { color: rgba(255, 255, 255, 0.72); }
+
+  .sec-head { max-width: 760px; }
+  .sec-head .eyebrow { margin-bottom: 16px; }
+  .sec-head h2 {
+    margin: 0; font: 700 var(--hi-heading-1)/1.3 var(--hi-font);
+    letter-spacing: -0.02em; color: var(--hi-ink);
+  }
+  .sec-head p {
+    margin: 16px 0 0; font: 500 var(--hi-body-1)/1.75 var(--hi-font); color: var(--hi-ink-3);
+  }
+  .sec-head--light h2 { color: #fff; }
+  .sec-head--light p { color: rgba(255, 255, 255, 0.78); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    height: 46px; padding: 0 20px;
+    font: 600 15px/1.2 var(--hi-font);
+    color: #fff; background: var(--hi-blue-600);
+    border: 1px solid transparent; border-radius: var(--hi-r-md);
+    text-decoration: none; cursor: pointer; white-space: nowrap;
+    transition: background var(--hi-fast) var(--hi-ease);
+  }
+  .btn:hover { background: var(--hi-blue-500); color: #fff; }
+  .btn--sm { height: 38px; padding: 0 16px; font-size: 14px; }
+  .btn--lg { height: 56px; padding: 0 28px; font-size: 16px; }
+  .btn--on-dark { background: #fff; color: var(--hi-navy-900); }
+  .btn--on-dark:hover { background: var(--hi-blue-50); color: var(--hi-navy-900); }
+  .btn--ghost-on-dark { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.38); }
+  .btn--ghost-on-dark:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+  .btn--outline { background: transparent; color: var(--hi-ink); border-color: var(--hi-line); }
+  .btn--outline:hover { background: var(--hi-surface-2); color: var(--hi-ink); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn__arrow { font-size: 1.05em; line-height: 1; }
+
+  .card {
+    background: var(--hi-surface); border: 1px solid var(--hi-line);
+    border-radius: var(--hi-r-lg); padding: 32px;
+    transition: box-shadow var(--hi-fast) var(--hi-ease), transform var(--hi-fast) var(--hi-ease);
+  }
+  .card--muted { background: var(--hi-surface-2); padding: 32px 28px; }
+  .card--hover:hover { box-shadow: var(--hi-shadow-md); transform: translateY(-2px); }
+  .card__num { font: 600 13px/1 var(--hi-font-num); color: var(--hi-blue-600); }
+  .card h3 { margin: 16px 0 0; font-size: var(--hi-heading-3); font-weight: 700; line-height: 1.45; letter-spacing: -0.01em; }
+  .card p { margin: 12px 0 0; font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-3); font-weight: 500; }
+
+  .tag {
+    display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+    background: var(--hi-blue-50); color: var(--hi-blue-600);
+    font: 600 var(--hi-detail)/1 var(--hi-font);
+    border-radius: var(--hi-r-full); white-space: nowrap;
+  }
+  .tag--gold { background: var(--hi-gold-50); color: var(--hi-gold-500); }
+
+  .stat__v { font: 600 var(--hi-display-2)/1.1 var(--hi-font-num); letter-spacing: -0.03em; color: #fff; }
+  .stat__l { margin-top: 10px; font: 500 var(--hi-body-2)/1.5 var(--hi-font); color: rgba(255, 255, 255, 0.68); }
+
+  .inforow {
+    display: flex; gap: 24px; padding: 16px 0;
+    border-bottom: 1px solid var(--hi-line-soft);
+    font: 500 var(--hi-body-2)/1.75 var(--hi-font);
+  }
+  .inforow__k { flex: none; width: 104px; color: var(--hi-ink-4); }
+  .inforow__v { color: var(--hi-ink); }
+
+  .step {
+    display: grid; grid-template-columns: 56px minmax(120px, 180px) minmax(200px, 1fr);
+    gap: 24px; align-items: baseline;
+    padding: 24px 0; border-top: 1px solid var(--hi-line-soft);
+  }
+  .step__i { font: 600 var(--hi-body-2)/1 var(--hi-font-num); color: var(--hi-blue-600); }
+  .step__t { font: 600 var(--hi-heading-3)/1.4 var(--hi-font); color: var(--hi-ink); }
+  .step__term { margin-top: 6px; font: 500 var(--hi-detail)/1.5 var(--hi-font); color: var(--hi-ink-4); }
+  .step__d { font: 500 var(--hi-body-2)/1.75 var(--hi-font); color: var(--hi-ink-3); }
+
+  /* ---------- 헤더 ---------- */
+  .site-header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    padding: 16px var(--hi-gutter);
+    background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--hi-line-soft);
+  }
+  .site-header__brand { display: flex; align-items: center; gap: 10px; }
+  .site-header__ko { font-size: 13px; color: var(--hi-ink-4); font-weight: 500; }
+  .site-nav { display: flex; align-items: center; gap: 32px; }
+  .site-nav a { font-size: 15px; font-weight: 600; color: var(--hi-ink-2); }
+  .site-nav a:hover { color: var(--hi-ink); }
+
+  /* ---------- 히어로 ---------- */
+  .hero { background: var(--hi-navy-900); color: #fff; padding: var(--hi-s28) var(--hi-gutter) 96px; }
+  .hero h1 {
+    margin: 20px 0 0; font-size: var(--hi-display-1); line-height: 1.25; font-weight: 700;
+    letter-spacing: -0.03em; max-width: 18ch; color: #fff;
+  }
+  .hero h1 em { font-style: normal; color: #7FA4FF; }
+  .hero__lead {
+    margin: 28px 0 0; font-size: var(--hi-body-1); line-height: 1.75;
+    color: rgba(255, 255, 255, 0.76); max-width: 60ch; font-weight: 500;
+  }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+  .hero__img {
+    width: 100%; aspect-ratio: 16 / 11; object-fit: cover;
+    border-radius: var(--hi-r-lg); border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: var(--hi-shadow-lg); display: block;
+  }
+  .hero__stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 40px;
+    margin-top: 88px; padding-top: 48px; border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .hero__note { margin: 24px 0 0; font-size: var(--hi-detail); color: rgba(255, 255, 255, 0.48); font-weight: 500; }
+
+  /* ---------- 이미지 ---------- */
+  .banner {
+    width: 100%; height: 420px; object-fit: cover; object-position: center top;
+    border-radius: var(--hi-r-lg); display: block;
+  }
+  .banner--team { height: 360px; object-position: center 45%; border: 1px solid var(--hi-line); margin-top: 48px; }
+  .banner__caption { margin: 16px 0 0; font-size: var(--hi-detail); color: var(--hi-ink-4); font-weight: 500; }
+  .img-square {
+    width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+    border-radius: var(--hi-r-lg); border: 1px solid var(--hi-line); display: block;
+  }
+
+  /* ---------- 서비스 카드 ---------- */
+  .svc { display: flex; flex-direction: column; gap: 16px; height: 100%; }
+  .svc__en { font: 600 var(--hi-eyebrow)/1.2 var(--hi-font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--hi-blue-600); }
+  .svc__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .svc__head h3 { margin: 0; font-size: var(--hi-heading-2); font-weight: 700; letter-spacing: -0.02em; }
+  .svc__desc { margin: 0; font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-3); font-weight: 500; }
+  .svc__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .svc__out { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--hi-line-soft); }
+  .svc__out-label { font-size: var(--hi-detail); font-weight: 600; color: var(--hi-ink-4); margin-bottom: 8px; }
+  .svc__out-body { font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink); font-weight: 500; }
+
+  /* ---------- 회사 ---------- */
+  .org-row { display: flex; align-items: baseline; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--hi-line-soft); }
+  .org-row__team { flex: none; width: 76px; font-size: var(--hi-body-2); font-weight: 700; }
+  .org-row__n { flex: none; width: 44px; font: 600 14px/1 var(--hi-font-num); color: var(--hi-blue-600); }
+  .org-row__role { font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-3); font-weight: 500; }
+  .principle h3 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+  .principle p { margin: 8px 0 0; font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-3); font-weight: 500; }
+  .excluded-row {
+    display: flex; gap: 12px; padding: 18px 0; border-bottom: 1px solid var(--hi-line);
+    font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-2); font-weight: 500;
+  }
+  .excluded-row span:first-child { flex: none; color: var(--hi-ink-4); }
+
+  /* ---------- 문의 ---------- */
+  .contact-card {
+    background: var(--hi-navy-900); border-radius: var(--hi-r-xl); padding: 72px 64px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 56px; align-items: center;
+  }
+  .contact-row { display: flex; gap: 16px; font-size: var(--hi-body-2); line-height: 1.75; font-weight: 500; color: #fff; }
+  .contact-row span:first-child { flex: none; width: 88px; color: rgba(255, 255, 255, 0.55); }
+
+  .site-footer { padding: 32px var(--hi-gutter) 56px; border-top: 1px solid var(--hi-line-soft); }
+  .site-footer .wrap { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; }
+
+  /* ---------- 상담 모달 ---------- */
+  .lead-dialog {
+    width: min(640px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px);
+    padding: 0; border: none; border-radius: var(--hi-r-xl);
+    background: var(--hi-surface); color: var(--hi-ink);
+    box-shadow: var(--hi-shadow-lg);
+  }
+  .lead-dialog::backdrop { background: rgba(8, 24, 47, 0.55); backdrop-filter: blur(2px); }
+  .lead-dialog__inner { padding: 36px 36px 32px; }
+  .lead-dialog__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+  .lead-dialog__head h2 { margin: 12px 0 0; font-size: var(--hi-heading-2); font-weight: 700; letter-spacing: -0.02em; }
+  .lead-dialog__head p { margin: 10px 0 0; font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-3); font-weight: 500; }
+  .lead-dialog__close {
+    flex: none; width: 36px; height: 36px; border-radius: var(--hi-r-md);
+    border: 1px solid var(--hi-line); background: var(--hi-surface);
+    font-size: 18px; line-height: 1; color: var(--hi-ink-3); cursor: pointer;
+  }
+  .lead-dialog__close:hover { background: var(--hi-surface-2); color: var(--hi-ink); }
+
+  .field { margin-top: 20px; }
+  .field > label { display: block; font-size: var(--hi-body-2); font-weight: 600; margin-bottom: 8px; }
+  .req { color: var(--hi-danger); margin-left: 2px; }
+  .field input[type="text"],
+  .field input[type="tel"],
+  .field input[type="email"],
+  .field select,
+  .field textarea {
+    width: 100%; padding: 12px 14px;
+    font: 500 var(--hi-body-2)/1.5 var(--hi-font); color: var(--hi-ink);
+    background: var(--hi-surface); border: 1px solid var(--hi-line);
+    border-radius: var(--hi-r-md); outline: none;
+    transition: border-color var(--hi-fast) var(--hi-ease), box-shadow var(--hi-fast) var(--hi-ease);
+  }
+  .field textarea { min-height: 112px; resize: vertical; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--hi-blue-600); box-shadow: 0 0 0 3px var(--hi-blue-50);
+  }
+  .field--error input, .field--error select, .field--error textarea { border-color: var(--hi-danger); }
+  .field__error { margin: 6px 0 0; font-size: var(--hi-detail); color: var(--hi-danger); font-weight: 500; }
+  .field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+  .consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 24px; }
+  .consent input { margin: 2px 0 0; width: 18px; height: 18px; accent-color: var(--hi-blue-600); flex: none; }
+  .consent label { font-size: var(--hi-body-2); line-height: 1.6; color: var(--hi-ink-2); font-weight: 500; }
+  .consent__detail { margin: 8px 0 0; font-size: var(--hi-detail); line-height: 1.7; color: var(--hi-ink-4); font-weight: 500; }
+  .consent.field--error label { color: var(--hi-danger); }
+
+  /* honeypot: 사람에게는 보이지 않지만 display:none은 아니어야 봇이 채운다 */
+  .hp { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+
+  .lead-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 28px; }
+  .lead-status { font-size: var(--hi-detail); font-weight: 500; color: var(--hi-danger); }
+
+  .lead-done { text-align: center; padding: 24px 0 8px; }
+  .lead-done__icon {
+    width: 56px; height: 56px; margin: 0 auto 20px; border-radius: var(--hi-r-full);
+    background: var(--hi-blue-50); color: var(--hi-blue-600);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+  }
+  .lead-done h2 { margin: 0; font-size: var(--hi-heading-2); font-weight: 700; letter-spacing: -0.02em; }
+  .lead-done p { margin: 12px 0 0; font-size: var(--hi-body-2); line-height: 1.75; color: var(--hi-ink-3); font-weight: 500; }
+  .lead-done .btn { margin-top: 28px; }
+
+  [hidden] { display: none !important; }
+
+  /* ---------- 스크롤 등장 애니메이션 ----------
+     JS가 대상 요소에 .reveal을 붙이고, 화면에 들어오면 .is-in을 더한다.
+     끝나면 두 클래스를 모두 제거해 카드 hover transform과 충돌하지 않게 한다. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .62s var(--hi-ease), transform .62s var(--hi-ease);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal.is-in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  @media (max-width: 860px) {
+    :root { --hi-display-1: 38px; --hi-display-2: 32px; --hi-heading-1: 26px; --hi-gutter: 20px; --hi-s28: 72px; }
+    .site-nav a { display: none; }
+    .contact-card { padding: 40px 24px; }
+    .lead-dialog__inner { padding: 24px 20px 20px; }
+    .step { grid-template-columns: 40px 1fr; }
+    .step__d { grid-column: 2; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header__brand">
+    <img src="uploads/logo.svg" alt="NEOCUBE" style="height:26px; width:auto; display:block;">
+    <span class="site-header__ko">네오큐브</span>
+  </div>
+  <nav class="site-nav">
+    <a href="#problem">문제</a>
+    <a href="#service">서비스</a>
+    <a href="#process">진행 방식</a>
+    <a href="#company">회사</a>
+    <button type="button" class="btn btn--sm" data-open-lead>무료 상담 <span class="btn__arrow">→</span></button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="grid-2">
+      <div>
+        <div class="eyebrow eyebrow--light">Diagnose · Redesign · Operate</div>
+        <h1>사람에게 붙어 있는 업무를 <em>기준과 도구</em>로 옮깁니다</h1>
+        <p class="hero__lead">네오큐브는 IT 서비스업 중소기업의 내부 업무를 진단하고, 다시 설계하고, 실행까지 대행하는 컨설팅·실행 대행 회사입니다.</p>
+        <div class="hero__cta">
+          <button type="button" class="btn btn--lg btn--on-dark" data-open-lead>사전 미팅 신청 (무상 60분) <span class="btn__arrow">→</span></button>
+          <a class="btn btn--lg btn--ghost-on-dark" href="#service">서비스 살펴보기</a>
+        </div>
+      </div>
+      <div>
+        <img class="hero__img" src="uploads/office_qwen3.png" loading="eager" fetchpriority="high" decoding="async" width="1408" height="832" alt="회의실에서 업무 흐름도를 펼쳐 놓고 고객사 담당자와 논의하는 네오큐브 컨설턴트">
+      </div>
+    </div>
+
+    <!-- data-count-to가 있는 값만 0부터 카운트업한다. 설립 연도는 연도라 제외. -->
+    <div class="hero__stats">
+      <div class="stat"><div class="stat__v" data-count-to="140" data-suffix="건">140건</div><div class="stat__l">누적 수행 프로젝트</div></div>
+      <div class="stat"><div class="stat__v" data-count-to="68" data-suffix="개사">68개사</div><div class="stat__l">고객사 수</div></div>
+      <div class="stat"><div class="stat__v" data-count-to="61" data-suffix="%">61%</div><div class="stat__l">재계약률</div></div>
+      <div class="stat"><div class="stat__v" data-count-to="12" data-suffix="명">12명</div><div class="stat__l">구성원</div></div>
+      <div class="stat"><div class="stat__v">2015년</div><div class="stat__l">설립</div></div>
+    </div>
+    <p class="hero__note">2015년 3월 ~ 2026년 8월, 자체 집계 기준. 개별 고객사명과 상세 내역은 비밀유지계약에 따라 공개하지 않습니다.</p>
+  </div>
+</section>
+
+<section id="problem" class="section">
+  <div class="wrap">
+    <div class="grid-2">
+      <div class="sec-head">
+        <div class="eyebrow">우리가 푸는 문제</div>
+        <h2>IT 서비스업 중소기업은 대부분 세 가지 상황에 놓여 있습니다</h2>
+        <p>네오큐브는 이 세 가지를 순서대로 처리합니다. 현황을 숫자로 정리하고, 프로세스를 다시 설계하고, 실행 인력이 부족한 구간은 저희가 직접 대행합니다.</p>
+      </div>
+      <img class="img-square" src="uploads/desk_qwen1.png" loading="lazy" decoding="async" width="1024" height="1024" alt="포스트잇과 인쇄된 정산 자료, 스프레드시트가 뒤섞인 담당자 책상">
+    </div>
+
+    <div class="grid-cards" style="margin-top:56px;">
+      <div class="card card--hover">
+        <div class="card__num">01</div>
+        <h3>업무가 사람에게 붙어 있다</h3>
+        <p>담당자가 바뀌면 일이 멈춥니다. 기준 문서가 없거나, 있어도 실제 업무와 다릅니다.</p>
+      </div>
+      <div class="card card--hover">
+        <div class="card__num">02</div>
+        <h3>도구는 많은데 정리가 안 되어 있다</h3>
+        <p>메신저, 스프레드시트, 이슈 트래커, 메일이 각각 따로 돌아갑니다. 같은 데이터를 세 번 입력합니다.</p>
+      </div>
+      <div class="card card--hover">
+        <div class="card__num">03</div>
+        <h3>개선할 사람이 없다</h3>
+        <p>개선안은 나오지만 실행할 담당자가 없어 6개월 뒤에도 그대로입니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="service" class="section section--alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">서비스 구성</div>
+      <h2>진단부터 실행 대행까지, 다섯 가지 방식</h2>
+      <p>필요한 구간만 선택해도 되고, 진단에서 실행까지 순서대로 이어가도 됩니다.</p>
+    </div>
+
+    <div class="grid-cards grid-cards--wide" style="margin-top:56px;">
+      <div class="card">
+        <div class="svc">
+          <div class="svc__en">Diagnosis</div>
+          <div class="svc__head"><h3>업무 진단</h3><span class="tag tag--gold">표준 4주</span></div>
+          <p class="svc__desc">현재 업무 흐름을 측정하고 병목을 문서로 정리합니다.</p>
+          <div class="svc__chips"><span class="tag">흐름 측정</span><span class="tag">병목 도출</span><span class="tag">우선순위</span></div>
+          <div class="svc__out">
+            <div class="svc__out-label">산출물</div>
+            <div class="svc__out-body">업무 흐름도, 소요 시간 측정표, 개선 과제 목록(우선순위 포함), 실행 로드맵</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="svc">
+          <div class="svc__en">Process Redesign</div>
+          <div class="svc__head"><h3>프로세스 재설계</h3><span class="tag tag--gold">표준 6~10주</span></div>
+          <p class="svc__desc">진단 결과를 바탕으로 업무 기준과 문서 체계를 다시 만듭니다.</p>
+          <div class="svc__chips"><span class="tag">업무 기준</span><span class="tag">R&amp;R 정의</span><span class="tag">담당자 교육</span></div>
+          <div class="svc__out">
+            <div class="svc__out-label">산출물</div>
+            <div class="svc__out-body">업무 매뉴얼, 역할·책임 정의서(R&amp;R), 결재·승인 기준, 템플릿 세트, 담당자 교육 2회</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="svc">
+          <div class="svc__en">Internal Tooling</div>
+          <div class="svc__head"><h3>사내 업무 도구 개발</h3><span class="tag tag--gold">표준 6~14주</span></div>
+          <p class="svc__desc">수작업이 반복되는 구간을 도구로 대체합니다. 대상 예시: 프로젝트 공수 집계, 견적·계약 관리, 고객 문의 분류, 정산 자료 자동 생성.</p>
+          <div class="svc__chips"><span class="tag">웹 도구</span><span class="tag">데이터 연동</span><span class="tag">90일 하자보수</span></div>
+          <div class="svc__out">
+            <div class="svc__out-label">산출물</div>
+            <div class="svc__out-body">웹 기반 도구, 운영 매뉴얼, 관리자 교육 1회, 검수 후 90일 무상 하자보수</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="svc">
+          <div class="svc__en">Managed Operation</div>
+          <div class="svc__head"><h3>실행 대행(리테이너)</h3><span class="tag tag--gold">최소 3개월</span></div>
+          <p class="svc__desc">설계한 프로세스를 저희 인력이 직접 운영합니다.</p>
+          <div class="svc__chips"><span class="tag">1차 응대</span><span class="tag">PMO</span><span class="tag">정산 자료</span></div>
+          <div class="svc__out">
+            <div class="svc__out-label">대상 업무</div>
+            <div class="svc__out-body">고객 문의 1차 응대, 프로젝트 진행 관리(PMO), 정산·청구 자료 작성, 사내 문서 관리</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="svc">
+          <div class="svc__en">Advisory</div>
+          <div class="svc__head"><h3>단기 자문</h3><span class="tag tag--gold">최소 4시간</span></div>
+          <p class="svc__desc">계약 없이 특정 사안만 검토가 필요할 때 이용합니다. 시간 단위 과금.</p>
+          <div class="svc__chips"><span class="tag">시간 단위</span><span class="tag">사안 검토</span></div>
+          <div class="svc__out">
+            <div class="svc__out-label">이용 조건</div>
+            <div class="svc__out-body">계약 없이 이용, 시간 단위 과금, 최소 4시간</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p style="margin:24px 0 0; font-size:var(--hi-detail); color:var(--hi-ink-4); font-weight:500;">세부 금액과 계약 조건은 service-policy.md를 참고하십시오.</p>
+  </div>
+</section>
+
+<section id="process" class="section">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">진행 방식</div>
+      <h2>사전 미팅부터 이관까지 일곱 단계</h2>
+      <p>각 단계의 기간과 산출 기준을 계약서에 문서로 고정합니다.</p>
+    </div>
+
+    <div style="margin-top:48px;">
+      <div class="step"><div class="step__i">01</div><div><div class="step__t">사전 미팅</div><div class="step__term">1~2회, 회당 60분</div></div><div class="step__d">현황 청취, 과제 범위 확인. 무상</div></div>
+      <div class="step"><div class="step__i">02</div><div><div class="step__t">제안·견적</div><div class="step__term">영업일 5일 이내</div></div><div class="step__d">범위·기간·금액·산출물 명시한 제안서 제출</div></div>
+      <div class="step"><div class="step__i">03</div><div><div class="step__t">계약</div><div class="step__term">영업일 3일</div></div><div class="step__d">계약서, NDA 동시 체결</div></div>
+      <div class="step"><div class="step__i">04</div><div><div class="step__t">착수</div><div class="step__term">1주</div></div><div class="step__d">담당자 지정, 자료 수령, 킥오프 미팅</div></div>
+      <div class="step"><div class="step__i">05</div><div><div class="step__t">수행</div><div class="step__term">과제별 상이</div></div><div class="step__d">주 1회 진행 보고, 격주 1회 대면 또는 화상 회의</div></div>
+      <div class="step"><div class="step__i">06</div><div><div class="step__t">검수</div><div class="step__term">2주</div></div><div class="step__d">산출물 인도, 고객 검수, 보완</div></div>
+      <div class="step"><div class="step__i">07</div><div><div class="step__t">종료·이관</div><div class="step__term">1주</div></div><div class="step__d">최종 보고, 담당자 인수인계, 계정 반납</div></div>
+    </div>
+
+    <figure style="margin:72px 0 0;">
+      <img class="banner" src="uploads/wall_qwen1.png" loading="lazy" decoding="async" width="1408" height="832" alt="벽에 붙인 프로세스 초안을 함께 검토하는 컨설턴트와 고객사 담당자">
+      <figcaption class="banner__caption">각 단계의 설계안은 고객 담당자와 함께 검토하고, 확정된 기준만 문서로 고정합니다.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="company" class="section section--alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">회사 개요</div>
+      <h2>12명이 프로젝트 단위로 붙습니다</h2>
+    </div>
+    <img class="banner banner--team" src="uploads/team_qwen1.png" loading="lazy" decoding="async" width="1408" height="832" alt="컨설팅·개발·디자인·PMO 구성원이 함께 근무하는 네오큐브 사무실">
+
+    <div class="grid-cards grid-cards--wide" style="gap:40px; margin-top:56px;">
+      <div class="card">
+        <div class="inforow"><div class="inforow__k">회사명</div><div class="inforow__v">네오큐브 (NEOCUBE)</div></div>
+        <div class="inforow"><div class="inforow__k">설립</div><div class="inforow__v">2015년 3월</div></div>
+        <div class="inforow"><div class="inforow__k">사업 영역</div><div class="inforow__v">중소기업 업무 및 서비스 개발</div></div>
+        <div class="inforow"><div class="inforow__k">구성원</div><div class="inforow__v">12명</div></div>
+        <div class="inforow"><div class="inforow__k">주요 고객</div><div class="inforow__v">임직원 10~150명 규모의 IT 서비스업 중소기업</div></div>
+        <div class="inforow"><div class="inforow__k">계약 형태</div><div class="inforow__v">프로젝트 단위 계약, 월 단위 리테이너 계약</div></div>
+      </div>
+      <div class="card">
+        <div class="svc__en" style="margin-bottom:12px;">Team · 12</div>
+        <div class="org-row"><div class="org-row__team">컨설팅</div><div class="org-row__n">4명</div><div class="org-row__role">업무 진단, 프로세스 설계, 고객 커뮤니케이션</div></div>
+        <div class="org-row"><div class="org-row__team">개발</div><div class="org-row__n">5명</div><div class="org-row__role">사내 업무 도구 개발, 데이터 연동, 운영 지원</div></div>
+        <div class="org-row"><div class="org-row__team">디자인</div><div class="org-row__n">1명</div><div class="org-row__role">화면 설계, 문서·템플릿 디자인</div></div>
+        <div class="org-row"><div class="org-row__team">운영·PMO</div><div class="org-row__n">2명</div><div class="org-row__role">일정 관리, 품질 점검, 계약·정산</div></div>
+        <p style="margin:20px 0 0; font-size:var(--hi-body-2); line-height:1.75; color:var(--hi-ink-3); font-weight:500;">프로젝트 1건당 최소 3명(컨설턴트 1, 실무자 1~2, PMO 1)이 투입됩니다. 담당 컨설턴트는 계약 종료까지 교체하지 않는 것을 원칙으로 합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:64px;">
+    <div>
+      <div class="sec-head">
+        <div class="eyebrow">일하는 원칙</div>
+        <h2>네 가지를 지킵니다</h2>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:28px; margin-top:40px;">
+        <div class="principle"><h3>측정 후 제안한다.</h3><p>근거 없는 개선안은 제출하지 않습니다. 모든 과제는 현재 소요 시간과 예상 절감 시간을 숫자로 제시합니다.</p></div>
+        <div class="principle"><h3>고객이 운영할 수 있는 수준까지 만든다.</h3><p>저희 없이 굴러가지 않는 결과물은 실패로 봅니다. 모든 계약에 매뉴얼과 교육이 포함됩니다.</p></div>
+        <div class="principle"><h3>범위를 문서로 고정한다.</h3><p>계약서에 산출물 목록과 제외 범위를 명시합니다. 구두 합의는 회의록으로 남깁니다.</p></div>
+        <div class="principle"><h3>못 하는 일은 못 한다고 말한다.</h3><p>대규모 기간계 시스템 구축, 하드웨어 인프라 구축, 인증 심사 대행은 수행하지 않습니다. 필요한 경우 협력사를 소개합니다.</p></div>
+      </div>
+    </div>
+    <div>
+      <div class="eyebrow">수행하지 않는 범위</div>
+      <div class="card card--muted" style="margin-top:24px;">
+        <div class="excluded-row"><span>—</span><span>전사 기간계 시스템(ERP·그룹웨어) 신규 구축 및 커스터마이징</span></div>
+        <div class="excluded-row"><span>—</span><span>서버·네트워크 등 물리 인프라 설계 및 구축</span></div>
+        <div class="excluded-row"><span>—</span><span>ISMS, ISO 등 인증 취득 심사 대행</span></div>
+        <div class="excluded-row"><span>—</span><span>인력 파견(근로자 파견) 형태의 상주 계약</span></div>
+        <div class="excluded-row"><span>—</span><span>마케팅 대행, 광고 집행</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="padding:0 var(--hi-gutter) var(--hi-s28);">
+  <div class="wrap contact-card">
+    <div class="sec-head sec-head--light">
+      <div class="eyebrow eyebrow--light">문의</div>
+      <h2>사전 미팅은 무상입니다</h2>
+      <p>60분, 온라인 또는 방문. 현황을 듣고 과제 범위를 함께 확인합니다.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <div class="contact-row"><span>상담 접수</span><span>홈페이지 문의 양식 또는 이메일</span></div>
+      <div class="contact-row"><span>회신 기준</span><span>영업일 기준 1일 이내 1차 회신</span></div>
+      <div style="margin-top:12px;">
+        <button type="button" class="btn btn--lg btn--on-dark" data-open-lead>문의 양식 작성하기 <span class="btn__arrow">→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <img src="uploads/logo.svg" alt="NEOCUBE" loading="lazy" decoding="async" style="height:22px; width:auto; display:block;">
+      <span style="font-size:15px; font-weight:700;">네오큐브</span>
+    </div>
+    <div style="font-size:var(--hi-detail); color:var(--hi-ink-4); font-weight:500;">중소기업 업무 및 서비스 개발 · 설립 2015년 3월</div>
+  </div>
+</footer>
+
+<!-- ---------- 상담 신청 모달 ---------- -->
+<dialog class="lead-dialog" id="leadDialog" aria-labelledby="leadTitle">
+  <div class="lead-dialog__inner">
+
+    <div id="leadFormPanel">
+      <div class="lead-dialog__head">
+        <div>
+          <div class="eyebrow">무료 상담</div>
+          <h2 id="leadTitle">사전 미팅 신청</h2>
+          <p>60분, 온라인 또는 방문. 접수 후 영업일 기준 1일 이내에 1차 회신드립니다.</p>
+        </div>
+        <button type="button" class="lead-dialog__close" data-close-lead aria-label="닫기">✕</button>
+      </div>
+
+      <form id="leadForm" novalidate>
+        <!-- honeypot: 사람은 보지 못하는 필드. 채워지면 서버가 조용히 무시한다. -->
+        <div class="hp" aria-hidden="true">
+          <label for="lead-website">홈페이지 주소 (입력하지 마세요)</label>
+          <input type="text" id="lead-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="field-row">
+          <div class="field" data-field="name">
+            <label for="lead-name">이름<span class="req">*</span></label>
+            <input type="text" id="lead-name" name="name" required maxlength="100" autocomplete="name" placeholder="홍길동">
+            <p class="field__error" hidden></p>
+          </div>
+          <div class="field" data-field="phone">
+            <label for="lead-phone">연락처<span class="req">*</span></label>
+            <input type="tel" id="lead-phone" name="phone" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="010-1234-5678">
+            <p class="field__error" hidden></p>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field" data-field="email">
+            <label for="lead-email">이메일</label>
+            <input type="email" id="lead-email" name="email" maxlength="254" autocomplete="email" placeholder="name@company.co.kr">
+            <p class="field__error" hidden></p>
+          </div>
+          <div class="field" data-field="company">
+            <label for="lead-company">회사</label>
+            <input type="text" id="lead-company" name="company" maxlength="200" autocomplete="organization" placeholder="주식회사 예시">
+            <p class="field__error" hidden></p>
+          </div>
+        </div>
+
+        <div class="field" data-field="service">
+          <label for="lead-service">관심 서비스</label>
+          <select id="lead-service" name="service">
+            <option value="">선택 안 함</option>
+            <option value="업무 진단">업무 진단</option>
+            <option value="프로세스 재설계">프로세스 재설계</option>
+            <option value="사내 업무 도구 개발">사내 업무 도구 개발</option>
+            <option value="실행 대행(리테이너)">실행 대행(리테이너)</option>
+            <option value="단기 자문">단기 자문</option>
+            <option value="아직 모르겠음">아직 모르겠음</option>
+          </select>
+          <p class="field__error" hidden></p>
+        </div>
+
+        <div class="field" data-field="message">
+          <label for="lead-message">문의내용</label>
+          <textarea id="lead-message" name="message" maxlength="5000" placeholder="현재 겪고 있는 상황이나 확인하고 싶은 점을 적어 주세요."></textarea>
+          <p class="field__error" hidden></p>
+        </div>
+
+        <div class="consent" data-field="consent">
+          <input type="checkbox" id="lead-consent" name="consent" required>
+          <div>
+            <label for="lead-consent">개인정보 수집·이용에 동의합니다.<span class="req">*</span></label>
+            <p class="consent__detail">수집 항목: 이름, 연락처, 이메일, 회사, 문의내용 · 이용 목적: 상담 회신 및 상담 이력 관리 · 보유 기간: 상담 종료 후 1년. 동의를 거부할 수 있으나, 이 경우 상담 신청이 접수되지 않습니다.</p>
+            <p class="field__error" hidden></p>
+          </div>
+        </div>
+
+        <div class="lead-actions">
+          <button type="submit" class="btn btn--lg" id="leadSubmit">상담 신청하기</button>
+          <button type="button" class="btn btn--lg btn--outline" data-close-lead>취소</button>
+          <span class="lead-status" id="leadStatus" role="alert"></span>
+        </div>
+      </form>
+    </div>
+
+    <div id="leadDonePanel" hidden>
+      <div class="lead-done">
+        <div class="lead-done__icon" aria-hidden="true">✓</div>
+        <h2>접수되었습니다</h2>
+        <p>영업일 기준 1일 이내에 담당 컨설턴트가 연락드립니다.</p>
+        <button type="button" class="btn btn--lg" data-close-lead>닫기</button>
+      </div>
+    </div>
+
+  </div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  var dialog = document.getElementById('leadDialog');
+  var form = document.getElementById('leadForm');
+  var formPanel = document.getElementById('leadFormPanel');
+  var donePanel = document.getElementById('leadDonePanel');
+  var submitBtn = document.getElementById('leadSubmit');
+  var statusEl = document.getElementById('leadStatus');
+
+  function clearErrors() {
+    statusEl.textContent = '';
+    Array.prototype.forEach.call(form.querySelectorAll('[data-field]'), function (box) {
+      box.classList.remove('field--error');
+      var msg = box.querySelector('.field__error');
+      if (msg) { msg.textContent = ''; msg.hidden = true; }
+    });
+  }
+
+  function showErrors(errors) {
+    var first = null;
+    Object.keys(errors || {}).forEach(function (name) {
+      var box = form.querySelector('[data-field="' + name + '"]');
+      if (!box) return;
+      box.classList.add('field--error');
+      var msg = box.querySelector('.field__error');
+      if (msg) { msg.textContent = errors[name]; msg.hidden = false; }
+      if (!first) first = box.querySelector('input, select, textarea');
+    });
+    if (first) first.focus();
+  }
+
+  /* 클라이언트 1차 검증. 최종 판단은 서버가 한다. */
+  function validateLocal(data) {
+    var errors = {};
+    if (!data.name) errors.name = '이름을 입력해 주세요.';
+    if (!data.phone) errors.phone = '연락처를 입력해 주세요.';
+    else if (data.phone.replace(/\D/g, '').length < 9) errors.phone = '연락처 형식을 확인해 주세요.';
+    if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.email = '이메일 형식을 확인해 주세요.';
+    if (!data.consent) errors.consent = '개인정보 수집·이용에 동의해 주세요.';
+    return errors;
+  }
+
+  function openDialog() {
+    clearErrors();
+    formPanel.hidden = false;
+    donePanel.hidden = true;
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+    var firstInput = document.getElementById('lead-name');
+    if (firstInput) firstInput.focus();
+  }
+
+  function closeDialog() {
+    if (typeof dialog.close === 'function') dialog.close();
+    else dialog.removeAttribute('open');
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-open-lead]'), function (btn) {
+    btn.addEventListener('click', openDialog);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close-lead]'), function (btn) {
+    btn.addEventListener('click', closeDialog);
+  });
+
+  /* 배경(backdrop) 클릭으로 닫기 */
+  dialog.addEventListener('click', function (e) {
+    if (e.target === dialog) closeDialog();
+  });
+
+  /* 닫을 때는 항상 폼 상태로 되돌린다 */
+  dialog.addEventListener('close', function () {
+    form.reset();
+    clearErrors();
+    formPanel.hidden = false;
+    donePanel.hidden = true;
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+
+    var fd = new FormData(form);
+    var data = {
+      name: (fd.get('name') || '').trim(),
+      phone: (fd.get('phone') || '').trim(),
+      email: (fd.get('email') || '').trim(),
+      company: (fd.get('company') || '').trim(),
+      service: (fd.get('service') || '').trim(),
+      message: (fd.get('message') || '').trim(),
+      consent: fd.get('consent') === 'on',
+      website: (fd.get('website') || '').trim()
+    };
+
+    var localErrors = validateLocal(data);
+    if (Object.keys(localErrors).length) {
+      showErrors(localErrors);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = '접수 중…';
+
+    fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (body) {
+          return { status: res.status, body: body };
+        });
+      })
+      .then(function (r) {
+        if (r.status === 200 && r.body.ok) {
+          formPanel.hidden = true;
+          donePanel.hidden = false;
+          form.reset();
+          var closeBtn = donePanel.querySelector('[data-close-lead]');
+          if (closeBtn) closeBtn.focus();
+          return;
+        }
+        if (r.body && r.body.errors) showErrors(r.body.errors);
+        statusEl.textContent = (r.body && r.body.error) || '접수에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+      })
+      .catch(function () {
+        statusEl.textContent = '네트워크 오류로 접수하지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '상담 신청하기';
+      });
+  });
+})();
+</script>
+
+<script>
+/* 스크롤 등장 애니메이션 + 히어로 수치 카운트업.
+   JS가 없거나 실패해도 마크업의 최종 상태가 그대로 보인다(점진적 향상). */
+(function () {
+  'use strict';
+
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasIO = 'IntersectionObserver' in window;
+
+  /* ---------- 1. 수치 카운트업 ---------- */
+  var COUNT_MS = 1400;
+
+  function countUp(el) {
+    var target = Number(el.getAttribute('data-count-to'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    if (!isFinite(target)) return;
+
+    var start = null;
+    el.textContent = '0' + suffix;
+
+    function frame(now) {
+      if (start === null) start = now;
+      var p = Math.min((now - start) / COUNT_MS, 1);
+      var eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+      el.textContent = Math.round(target * eased).toLocaleString('ko-KR') + suffix;
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- 2. 스크롤 등장 ---------- */
+  // 섹션별로 자연스러운 단위를 골라 한 번에 올린다. 그룹 안에서는 순차 지연을 준다.
+  var GROUPS = [
+    '.hero .eyebrow, .hero h1, .hero__lead, .hero__cta, .hero__img',
+    '.hero__stats .stat',
+    '.sec-head',
+    '.img-square',
+    '.grid-cards > .card',
+    '.step',
+    'figure',
+    '.banner--team',
+    '.principle',
+    '.card--muted .excluded-row',
+    '.contact-card > *'
+  ];
+
+  var STAGGER = 70;   // 그룹 내 순차 지연 (ms)
+  var MAX_DELAY = 350;
+
+  function markGroup(selector) {
+    var nodes = document.querySelectorAll(selector);
+    Array.prototype.forEach.call(nodes, function (el, i) {
+      el.classList.add('reveal');
+      el.style.setProperty('--reveal-delay', Math.min(i * STAGGER, MAX_DELAY) + 'ms');
+    });
+    return nodes;
+  }
+
+  function reveal(el) {
+    el.classList.add('is-in');
+    // 애니메이션이 끝나면 클래스를 걷어낸다 — 카드 hover의 transform과 겹치지 않도록.
+    var done = function () {
+      el.classList.remove('reveal', 'is-in');
+      el.style.removeProperty('--reveal-delay');
+      el.style.removeProperty('will-change');
+      el.removeEventListener('transitionend', done);
+    };
+    el.addEventListener('transitionend', done);
+    setTimeout(done, 1400); // transitionend가 안 오는 경우 대비
+  }
+
+  /* ---------- 3. 연결 ---------- */
+  if (reduced || !hasIO) {
+    // 모션 최소화이거나 IO 미지원이면 애니메이션 없이 최종 상태로 둔다.
+    Array.prototype.forEach.call(document.querySelectorAll('[data-count-to]'), function (el) {
+      if (!reduced) countUp(el);
+    });
+    return;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      io.unobserve(entry.target); // 한 번만
+      reveal(entry.target);
+      var counter = entry.target.matches('[data-count-to]')
+        ? entry.target
+        : entry.target.querySelector('[data-count-to]');
+      if (counter) countUp(counter);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+  GROUPS.forEach(function (sel) {
+    Array.prototype.forEach.call(markGroup(sel), function (el) { io.observe(el); });
+  });
+
+  // 히어로는 첫 화면이라 관찰을 기다리지 않고 바로 올린다.
+  Array.prototype.forEach.call(
+    document.querySelectorAll('.hero .eyebrow, .hero h1, .hero__lead, .hero__cta, .hero__img'),
+    function (el) { io.unobserve(el); reveal(el); }
+  );
+})();
+</script>
+
+<!-- 고객 응대 챗봇 위젯 (우측 하단) -->
+<script src="chatbot.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+/* Helloinsa Design System — tokens
+   Derived from helloinsa.co.kr (급여 아웃소싱 / Since 1999).
+   Identity: deep navy trust ground + confident blue action color,
+   heritage gold used only as a heritage/number accent. */
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  /* Brand */
+  --hi-navy-900: #08182F;   /* hero / footer ground */
+  --hi-navy-800: #0F2A4E;
+  --hi-navy-700: #163A68;
+  --hi-blue-600: #1B4DE4;   /* primary action */
+  --hi-blue-500: #3C68EA;   /* hover */
+  --hi-blue-700: #143CB4;   /* press */
+  --hi-blue-100: #D9E2FD;
+  --hi-blue-50:  #EEF3FE;
+  --hi-gold-500: #C08A2E;   /* heritage accent, text-safe on white */
+  --hi-gold-50:  #FBF3E4;
+
+  /* Neutrals */
+  --hi-ink:        #14181F;
+  --hi-ink-2:      #414852;
+  --hi-ink-3:      #6B7280;
+  --hi-ink-4:      #9AA1AC;
+  --hi-line:       #E4E7EC;
+  --hi-line-soft:  #EFF1F4;
+  --hi-surface:    #FFFFFF;
+  --hi-surface-2:  #F7F8FA;
+
+  /* Status */
+  --hi-success: #1E9E63;
+  --hi-warning: #D99200;
+  --hi-danger:  #D83A2B;
+
+  /* Type */
+  --hi-font: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --hi-font-num: "Inter", var(--hi-font);
+  --hi-display-1: 56px;
+  --hi-display-2: 44px;
+  --hi-heading-1: 34px;
+  --hi-heading-2: 26px;
+  --hi-heading-3: 20px;
+  --hi-body-1: 17px;
+  --hi-body-2: 15px;
+  --hi-detail: 13px;
+  --hi-eyebrow: 12px;
+
+  /* Spacing — 4px grid, marketing rhythm */
+  --hi-s1: 4px;  --hi-s2: 8px;  --hi-s3: 12px; --hi-s4: 16px;
+  --hi-s5: 20px; --hi-s6: 24px; --hi-s8: 32px; --hi-s10: 40px;
+  --hi-s14: 56px; --hi-s18: 72px; --hi-s28: 112px;
+
+  /* Radius — softer than admin UI */
+  --hi-r-sm: 6px;
+  --hi-r-md: 10px;
+  --hi-r-lg: 16px;
+  --hi-r-xl: 24px;
+  --hi-r-full: 9999px;
+
+  /* Elevation — blue-tinted, restrained */
+  --hi-shadow-sm: 0 1px 2px rgba(8, 24, 47, 0.06);
+  --hi-shadow-md: 0 6px 20px rgba(8, 24, 47, 0.08);
+  --hi-shadow-lg: 0 18px 48px rgba(8, 24, 47, 0.12);
+
+  /* Motion */
+  --hi-fast: 140ms;
+  --hi-ease: cubic-bezier(.4, 0, .2, 1);
+
+  /* Layout */
+  --hi-container: 1160px;
+  --hi-gutter: 40px;
+}
