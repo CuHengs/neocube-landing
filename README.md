@@ -16,6 +16,7 @@ api/chat.js           POST /api/chat   챗봇 대화
 lib/lead.js           검증 · honeypot · rate limit · Airtable 기록
 lib/chat.js           시스템 프롬프트 · 모델 호출 · 대화 로그
 lib/knowledge.js      FAQ 조회 · 5분 캐시 · docs/faq.md 폴백
+lib/notify.js         새 상담 신청 텔레그램 알림 (선택)
 
 docs/faq.md           Airtable 조회 실패 시 쓰는 폴백 지식
 helloinsa-ds/         디자인 토큰 (CSS 변수)
@@ -55,6 +56,8 @@ node test/chat.test.js
 | `LLM_API_KEY` | OpenAI API 키 |
 | `CHAT_MODEL` | 답변 모델 |
 | `CHAT_BOT_NAME` | 챗봇 표시 이름 |
+| `TELEGRAM_BOT_TOKEN` | 새 상담 신청 알림 (선택) |
+| `TELEGRAM_CHAT_ID` | 알림 받을 채팅 (선택) |
 
 ## 배포 (Vercel)
 
@@ -68,6 +71,7 @@ FAQ 폴백 파일이 함수 번들에 포함되어야 하기 때문이다.
 
 - **상담 신청** — 서버에서 이름·연락처를 다시 검증하고, honeypot 필드가 채워지면 조용히 버린다. 같은 IP 1분 3건 초과는 429.
 - **챗봇** — 공개 체크된 FAQ를 우선순위 순 60건까지 시스템 프롬프트에 넣는다. Airtable이 실패하면 `docs/faq.md`로 폴백해 답변을 멈추지 않는다.
+- **텔레그램 알림** — 상담 접수 성공 직후 보낸다. `await`하지 않고 실패도 삼키므로 알림이 접수를 막지 않는다. 환경 변수가 없으면 조용히 건너뛴다.
 - **대화 기록** — ChatLogs 기록은 `await`하지 않고 실패도 삼킨다. 기록이 답변을 막지 않는다.
 - **rate limit** — 프로세스 메모리 기반이라 서버리스에서는 인스턴스마다 따로 센다. 엄밀한 차단이 필요하면 외부 저장소로 교체해야 한다.
 

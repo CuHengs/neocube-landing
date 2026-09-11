@@ -52,3 +52,39 @@ assert.equal(limited.status, 429, '4건째는 429');
 assert.equal(typeof limited.body.retryAfter, 'number', 'retryAfter 제공');
 
 console.log('통과: lead 검증 / rate limit / honeypot');
+
+// --- 텔레그램 알림 ---
+const { notifyLead, NOTIFY_INTERNAL } = await import('../lib/notify.js');
+
+// 환경 변수가 없으면 조용히 건너뛴다 (알림은 선택 기능)
+const savedTg = { t: process.env.TELEGRAM_BOT_TOKEN, c: process.env.TELEGRAM_CHAT_ID };
+delete process.env.TELEGRAM_BOT_TOKEN;
+delete process.env.TELEGRAM_CHAT_ID;
+const skipped = await notifyLead({ name: 'x', phone: '010-0000-0000', source: '폼' });
+assert.equal(skipped.sent, false, '미설정이면 전송하지 않음');
+assert.equal(skipped.reason, 'not-configured', '사유가 명확함');
+if (savedTg.t) process.env.TELEGRAM_BOT_TOKEN = savedTg.t;
+if (savedTg.c) process.env.TELEGRAM_CHAT_ID = savedTg.c;
+
+// 메시지 조립: HTML 이스케이프와 길이 절단
+const msg = NOTIFY_INTERNAL.buildMessage({
+  name: '<script>', phone: '010-1234-5678', company: 'A & B',
+  source: '챗봇', message: 'x'.repeat(900),
+}, 'recTEST');
+assert.ok(msg.includes('&lt;script&gt;'), '이름의 HTML 이스케이프');
+assert.ok(msg.includes('A &amp; B'), '앰퍼샌드 이스케이프');
+assert.ok(msg.includes('유입경로: 챗봇'), '유입경로 포함');
+assert.ok(msg.includes('recTEST'), 'Airtable 레코드 ID 포함');
+assert.ok(msg.includes('…'), '긴 문의내용 절단');
+assert.ok(msg.length < 1200, '텔레그램 길이 제한 안에 들어옴');
+
+// 알림 실패가 접수를 막지 않는지: 잘못된 토큰으로도 예외가 새지 않아야 한다
+process.env.TELEGRAM_BOT_TOKEN = '0:invalid';
+process.env.TELEGRAM_CHAT_ID = '0';
+const failed = await notifyLead({ name: 'x', phone: '010-0000-0000', source: '폼' });
+assert.equal(failed.sent, false, '잘못된 토큰은 실패로 반환');
+assert.ok(!('error' in failed), '예외를 던지지 않음');
+if (savedTg.t) process.env.TELEGRAM_BOT_TOKEN = savedTg.t; else delete process.env.TELEGRAM_BOT_TOKEN;
+if (savedTg.c) process.env.TELEGRAM_CHAT_ID = savedTg.c; else delete process.env.TELEGRAM_CHAT_ID;
+
+console.log('통과: 텔레그램 알림 (미설정 건너뛰기 / 이스케이프 / 절단 / 실패 격리)');
