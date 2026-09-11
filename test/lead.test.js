@@ -121,4 +121,40 @@ if (savedIds.t) process.env.AIRTABLE_LEADS_TABLE_ID = savedIds.t; else delete pr
 
 assert.equal(TELEGRAM_INTERNAL.TIMEOUT_MS, 5000, '타임아웃 5초');
 
-console.log('통과: 텔레그램 알림 (미설정 건너뛰기 / 이스케이프 / 절단 / 실패 격리 / KST / 관리자 링크 / 타임아웃)');
+// handleLead는 알림을 await하지만, 알림이 실패해도 접수는 200으로 응답해야 한다.
+// (Vercel은 응답 직후 함수를 얼려서 await 없이는 전송이 끊긴다 — 그래서 기다린다)
+{
+  const savedAll = {
+    tok: process.env.AIRTABLE_TOKEN, base: process.env.AIRTABLE_BASE_ID,
+    tbl: process.env.AIRTABLE_LEADS_TABLE_ID,
+    tg: process.env.TELEGRAM_BOT_TOKEN, cid: process.env.TELEGRAM_CHAT_ID,
+  };
+  // Airtable은 실제로 부르지 않도록 fetch를 가로챈다.
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    if (String(url).includes('api.airtable.com')) {
+      return new Response(JSON.stringify({ records: [{ id: 'recFAKE' }] }), { status: 200 });
+    }
+    throw new Error('telegram down');   // 알림은 항상 실패시킨다
+  };
+  process.env.AIRTABLE_TOKEN = 'x';
+  process.env.AIRTABLE_BASE_ID = 'appX';
+  process.env.AIRTABLE_LEADS_TABLE_ID = 'tblX';
+  process.env.TELEGRAM_BOT_TOKEN = 'x';
+  process.env.TELEGRAM_CHAT_ID = '1';
+
+  resetRateLimit();
+  const res = await handleLead({ name: '홍길동', phone: '010-1234-5678', consent: true }, '7.7.7.7');
+  assert.equal(res.status, 200, '알림이 실패해도 접수는 200');
+  assert.equal(res.body.ok, true, '사용자에게는 정상 접수로 응답');
+  assert.equal(res.body.id, 'recFAKE', '레코드 ID는 그대로 반환');
+
+  globalThis.fetch = realFetch;
+  for (const [k, v] of Object.entries({
+    AIRTABLE_TOKEN: savedAll.tok, AIRTABLE_BASE_ID: savedAll.base,
+    AIRTABLE_LEADS_TABLE_ID: savedAll.tbl,
+    TELEGRAM_BOT_TOKEN: savedAll.tg, TELEGRAM_CHAT_ID: savedAll.cid,
+  })) { if (v) process.env[k] = v; else delete process.env[k]; }
+}
+
+console.log('통과: 텔레그램 알림 (미설정 건너뛰기 / 이스케이프 / 절단 / 실패 격리 / KST / 관리자 링크 / 타임아웃 / 실패해도 200)');
